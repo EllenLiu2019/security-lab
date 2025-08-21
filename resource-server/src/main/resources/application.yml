@@ -1,0 +1,23 @@
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+
+spring:
+  application:
+    name: resource-server
+  profiles:
+    active: dev
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9000/oauth2/jwks
+          #jwk-set-uri: http://localhost:8190/realms/dev%20realm/protocol/openid-connect/certs # The URI used to retrieve the JSON Web Key (JWK) Set from the Authorization Server, which contains the cryptographic key(s) used to verify the JSON Web Signature (JWS) of the ID Token and (optionally) the UserInfo Response.
+
+group:
+  id: Banking-API-DEV

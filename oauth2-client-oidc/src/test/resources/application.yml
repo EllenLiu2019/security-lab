@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: test
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 442417568524-6df9ulgfc8ire1eo0r1smmgc42aaq3pe.apps.googleusercontent.com
+            client-secret: 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
+

@@ -1,0 +1,49 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: oauth2-rest-client
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  security:
+    oauth2:
+      client:
+        registration:
+          apiBanking-client:
+            provider: spring
+            client-id: apiBanking-client
+            client-secret: client
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - email
+            client-name: Spring Login Client
+          apiBanking-apis:
+            provider: spring
+            client-id: apiBanking-apis
+            client-secret: secret
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: client_credentials
+            scope:
+              - process
+              - read
+              - write
+            client-name: Spring APIs
+        provider:
+          spring:
+            issuer-uri: http://localhost:9000
+            authorization-uri: http://localhost:9000/oauth2/authorize
+            token-uri: http://localhost:9000/oauth2/token
+            jwk-set-uri: http://localhost:9000/oauth2/jwks
+
+resource-server:
+  url: http://localhost:8082
+
+auth-server:
+  login-client-id: apiBanking-client
+  register-client-id: apiBanking-apis
