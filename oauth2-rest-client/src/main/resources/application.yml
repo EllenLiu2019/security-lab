@@ -15,7 +15,7 @@ spring:
           apiBanking-client:
             provider: spring
             client-id: apiBanking-client
-            client-secret: client
+            client-secret: ENC(2GH7LwUbM9M6Z8aKvDh1weCz/K1B/8l6lzyuZGc3z1ma2g==)
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
@@ -26,7 +26,7 @@ spring:
           apiBanking-apis:
             provider: spring
             client-id: apiBanking-apis
-            client-secret: secret
+            client-secret: ENC(hd9/tj9Ztrl5gADG0j8LrosWdKMV8xsufIcXsT6exveGeA==)
             client-authentication-method: client_secret_basic
             authorization-grant-type: client_credentials
             scope:
@@ -47,3 +47,11 @@ resource-server:
 auth-server:
   login-client-id: apiBanking-client
   register-client-id: apiBanking-apis
+
+jasypt:
+  encryptor:
+    password: FILE:../secret_key.b64
+    #Optional, defaults to 0, no salt. If provided, specify the salt string in ba64 format
+    salt: c3NwaXRfc2FsdF9zd2VldAo=
+    algorithm: AES/GCM/NoPadding
+    secretKeyAlgorithm: PBKDF2WithHmacSHA256

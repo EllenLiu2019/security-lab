@@ -18,9 +18,16 @@ spring:
       hibernate:
         format_sql: true
 
+jasypt:
+  encryptor:
+    password: FILE:../secret_key.b64
+    #Optional, defaults to 0, no salt. If provided, specify the salt string in ba64 format
+    salt: c3NwaXRfc2FsdF9zd2VldAo=
+    algorithm: AES/GCM/NoPadding
+    secretKeyAlgorithm: PBKDF2WithHmacSHA256
 
 datasource:
   auth-server:
     jdbc-url: jdbc:mysql://localhost:3306/${spring.application.name}
     username: security
-    password: security123456
+    password: ENC(mxLP0L9X2UzoMWk80KwDzLGsOXdyKuw202h5ksdJDTISdaemmt517K6m)
