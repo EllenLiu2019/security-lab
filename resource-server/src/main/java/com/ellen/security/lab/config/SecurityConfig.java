@@ -1,12 +1,14 @@
 package com.ellen.security.lab.config;
 
 
+import com.ellen.security.lab.config.property.JwtProperties;
 import com.ellen.security.lab.exceptionhandler.CustomBearerTokenAuthenticationEntryPoint;
 import com.ellen.security.lab.filter.KeyValueLogger;
 import com.ellen.security.lab.filter.LoggingFilter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,15 +16,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.web.client.RestOperations;
 
 
 @Configuration
@@ -44,14 +43,16 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
         JwtAuthenticationConverter jwtAuthConverter = new JwtAuthenticationConverter();
         jwtAuthConverter.setJwtGrantedAuthoritiesConverter(new Oauth2RoleConverter());
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .oauth2ResourceServer(resourceServer ->
-                        resourceServer.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthConverter)))
+                .oauth2ResourceServer(resourceServer -> resourceServer
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthConverter)
+                                .decoder(jwtDecoder)
+                        ))
                 .authorizeHttpRequests(requestMatcherRegistry ->
                         requestMatcherRegistry
                                 .requestMatchers(PUBLIC).permitAll()
@@ -61,6 +62,22 @@ public class SecurityConfig {
                 .addFilterAfter(new LoggingFilter(this.keyValueLogger), AuthorizationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    @Profile("prod")
+    @ConfigurationProperties("spring.security.oauth2.resourceserver.jwt")
+    public JwtProperties jwtproperties() {
+        return new JwtProperties();
+    }
+
+    @Bean
+    @Profile("prod")
+    public JwtDecoder jwtDecoderByJwkKeySetUri(JwtProperties jwtProperties, RestOperations jwtRestTemplate) {
+        NimbusJwtDecoder.JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder
+                .withJwkSetUri(jwtProperties.getJwkSetUri())
+                .restOperations(jwtRestTemplate);
+        return builder.build();
     }
 
     @Bean
