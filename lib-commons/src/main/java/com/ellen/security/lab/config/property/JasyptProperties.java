@@ -1,4 +1,4 @@
-package com.ellen.security.lab.config;
+package com.ellen.security.lab.config.property;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;

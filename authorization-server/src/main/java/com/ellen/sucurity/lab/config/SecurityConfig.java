@@ -1,9 +1,11 @@
 package com.ellen.sucurity.lab.config;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
+import java.util.Arrays;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -33,6 +37,9 @@ public class SecurityConfig {
             "/ping"
     };
 
+    @Autowired
+    private Environment environment;
+
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
@@ -46,9 +53,7 @@ public class SecurityConfig {
                 // Enable OpenID Connect 1.0
                 .with(authorizationServerConfigurer,
                         authorizationServer -> authorizationServer.oidc(withDefaults()))
-                .authorizeHttpRequests(authReqMatcher -> authReqMatcher
-                        .requestMatchers(PUBLIC).permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(authReqMatcher -> authReqMatcher.anyRequest().authenticated())
                 // Redirect to the login page when not authenticated from
                 // the authorization endpoint
                 .exceptionHandling(exceptions ->
@@ -56,6 +61,9 @@ public class SecurityConfig {
                                 new LoginUrlAuthenticationEntryPoint("/login"),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
 
+        if (Arrays.asList(environment.getActiveProfiles()).contains("prod")) {
+            http.redirectToHttps(withDefaults());
+        }
         return http.build();
     }
 
@@ -64,10 +72,17 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authReqMatcher -> authReqMatcher.anyRequest().authenticated())
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(authReqMatcher -> authReqMatcher
+                        .requestMatchers(PUBLIC).permitAll()
+                        .anyRequest().authenticated())
                 // authorization server filter chain will redirect to login page
                 .formLogin(withDefaults());
+
+        if (Arrays.asList(environment.getActiveProfiles()).contains("prod")) {
+            http.redirectToHttps(withDefaults());
+        }
         return http.build();
     }
 

@@ -1,0 +1,45 @@
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:config/prod/keystore/auth-server-keystore.p12
+    key-store-password: ENC(lrfd4eZ2fztVo1XUip9qJCuOgW2NLF5+HT6A6eOXoU6rritw)
+    key-store-type: PKCS12
+    key-alias: signning-key
+    client-auth: need
+    trust-store: classpath:config/prod/keystore/auth-server-truststore.p12
+    trust-store-password: ENC(ur8o0tw4DdMNSp19fo4uEezk90x0/dIewy177AKKaVXJdPmW)
+    trust-store-type: PKCS12
+
+management:
+  server:
+    port: 8080
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+
+spring:
+  application:
+    name: auth-server
+  profiles:
+    active: prod
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+jasypt:
+  encryptor:
+    password: FILE:../secret_key.b64
+    #Optional, defaults to 0, no salt. If provided, specify the salt string in ba64 format
+    salt: c3NwaXRfc2FsdF9zd2VldAo=
+    algorithm: AES/GCM/NoPadding
+    secretKeyAlgorithm: PBKDF2WithHmacSHA256
+
+datasource:
+  auth-server:
+    jdbc-url: jdbc:mysql://localhost:3306/${spring.application.name}
+    username: security
+    password: ENC(mxLP0L9X2UzoMWk80KwDzLGsOXdyKuw202h5ksdJDTISdaemmt517K6m)

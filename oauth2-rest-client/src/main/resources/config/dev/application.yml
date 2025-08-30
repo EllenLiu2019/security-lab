@@ -42,7 +42,7 @@ spring:
             jwk-set-uri: http://localhost:9000/oauth2/jwks
 
 resource-server:
-  url: http://localhost:8082
+  baseUrl: http://localhost:8082
 
 auth-server:
   login-client-id: apiBanking-client
@@ -55,3 +55,7 @@ jasypt:
     salt: c3NwaXRfc2FsdF9zd2VldAo=
     algorithm: AES/GCM/NoPadding
     secretKeyAlgorithm: PBKDF2WithHmacSHA256
+
+security:
+  truststore: classpath:config/prod/keystore/client-truststore.p12
+  truststorePassword: ENC(lrfd4eZ2fztVo1XUip9qJCuOgW2NLF5+HT6A6eOXoU6rritw)

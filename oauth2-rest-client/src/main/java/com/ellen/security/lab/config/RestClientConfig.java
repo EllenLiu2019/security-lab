@@ -18,7 +18,7 @@ import static org.springframework.security.oauth2.client.web.client.OAuth2Client
 @Configuration
 public class RestClientConfig {
 
-    @Value("${resource-server.url}")
+    @Value("${resource-server.baseUrl}")
     private String resourceUrl;
 
     @Bean

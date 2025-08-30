@@ -1,0 +1,39 @@
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+
+spring:
+  application:
+    name: resource-server
+  profiles:
+    active: prod
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://localhost:8443
+          jwk-set-uri: https://localhost:8443/oauth2/jwks
+          jws-algorithms: RS512
+
+group:
+  id: Banking-API-DEV
+
+jasypt:
+  encryptor:
+    password: FILE:../secret_key.b64
+    #Optional, defaults to 0, no salt. If provided, specify the salt string in ba64 format
+    salt: c3NwaXRfc2FsdF9zd2VldAo=
+    algorithm: AES/GCM/NoPadding
+    secretKeyAlgorithm: PBKDF2WithHmacSHA256
+
+auth-server:
+  security:
+    keystore: classpath:config/prod/keystore/resource-server-keystore.p12
+    keystorePassword: ENC(Q/AoORv9HInZJRyWCezXr0z8XeNVvSgaxJ0+Rmr2sjcMKUss)
+    truststore: classpath:config/prod/keystore/resource-server-truststore.p12
+    truststorePassword: ENC(ur8o0tw4DdMNSp19fo4uEezk90x0/dIewy177AKKaVXJdPmW)

@@ -1,5 +1,6 @@
 package com.ellen.security.lab.config;
 
+import com.ellen.security.lab.config.property.JasyptProperties;
 import com.ellen.security.lab.detector.FilePropertyDetector;
 import com.ulisesbocchio.jasyptspringboot.EncryptablePropertyDetector;
 import com.ulisesbocchio.jasyptspringboot.encryptor.SimpleGCMConfig;

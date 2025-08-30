@@ -1,0 +1,63 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: oauth2-rest-client
+  profiles:
+    active: prod
+  main:
+    allow-circular-references: true
+  security:
+    oauth2:
+      client:
+        registration:
+          apiBanking-client:
+            provider: spring
+            client-id: apiBanking-client
+            client-secret: ENC(2GH7LwUbM9M6Z8aKvDh1weCz/K1B/8l6lzyuZGc3z1ma2g==)
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - email
+            client-name: Spring Login Client
+          apiBanking-apis:
+            provider: spring
+            client-id: apiBanking-apis
+            client-secret: ENC(hd9/tj9Ztrl5gADG0j8LrosWdKMV8xsufIcXsT6exveGeA==)
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: client_credentials
+            scope:
+              - process
+              - read
+              - write
+            client-name: Spring APIs
+        provider:
+          spring:
+            #issuer-uri: https://localhost:8443
+            authorization-uri: https://localhost:8443/oauth2/authorize
+            token-uri: https://localhost:8443/oauth2/token
+            jwk-set-uri: https://localhost:8443/oauth2/jwks
+
+resource-server:
+  baseUrl: http://localhost:8082
+
+auth-server:
+  login-client-id: apiBanking-client
+  register-client-id: apiBanking-apis
+  security:
+    keystore: classpath:config/prod/keystore/rest-client-keystore.p12
+    keystorePassword: ENC(RjxY63l/hUbaGRCfWYGNLDmrbMbT6c1kGpJr9CdH9DifLUp8)
+    truststore: classpath:config/prod/keystore/rest-client-truststore.p12
+    truststorePassword: ENC(lrfd4eZ2fztVo1XUip9qJCuOgW2NLF5+HT6A6eOXoU6rritw)
+
+jasypt:
+  encryptor:
+    password: FILE:../secret_key.b64
+    #Optional, defaults to 0, no salt. If provided, specify the salt string in ba64 format
+    salt: c3NwaXRfc2FsdF9zd2VldAo=
+    algorithm: AES/GCM/NoPadding
+    secretKeyAlgorithm: PBKDF2WithHmacSHA256
+

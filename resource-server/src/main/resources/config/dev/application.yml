@@ -21,3 +21,15 @@ spring:
 
 group:
   id: Banking-API-DEV
+
+jasypt:
+  encryptor:
+    password: FILE:../secret_key.b64
+    #Optional, defaults to 0, no salt. If provided, specify the salt string in ba64 format
+    salt: c3NwaXRfc2FsdF9zd2VldAo=
+    algorithm: AES/GCM/NoPadding
+    secretKeyAlgorithm: PBKDF2WithHmacSHA256
+
+security:
+  truststore: classpath:config/prod/keystore/client-truststore.p12
+  truststorePassword: ENC(lrfd4eZ2fztVo1XUip9qJCuOgW2NLF5+HT6A6eOXoU6rritw)
